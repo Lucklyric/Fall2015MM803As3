@@ -26,20 +26,22 @@ for a = 1:h/N
                 sum = 0;
                 for i=1:N
                     for j=1:M
-                        sum = sum+ double(I(N*(a-1)+i,M*(b-1)+j))*cos(pi*(2*i+1)*u/(2*N))*cos(pi*(2*j+1)*v/(2*M));
+                        sum = sum+ double(I(N*(a-1)+i,M*(b-1)+j))*...
+                            cos(pi*(2*(i-1)+1)*(u-1)/(2*N))*...
+                            cos(pi*(2*(j-1)+1)*(v-1)/(2*M));
                     end
                 end
-                if u==0
-                    sum=sum*(1/sqrt(2));
+                if (u-1)==0
+                    sum=sum*sqrt(1/2);
                 else
                     sum=sum*1;
                 end
-                if v==0
-                    sum=sum*(1/sqrt(2));
+                if (v-1)==0
+                    sum=sum*sqrt(1/2);
                 else
                     sum=sum*1;
                 end
-                Blocks(a,b).block(u,v) = sum*1/4;
+                Blocks(a,b).block(u,v) = sum*(1/4);
             end
         end
         %Blocks(a,b).block=round(Blocks(a,b).block./Norm_Mat);
@@ -55,14 +57,17 @@ for a = 1:h/N
                 sum = 0;
                 for i=1:N
                     for j=1:M
-                        tmpSum = double(Blocks(a,b).block(i,j))*cos(pi*(2*i+1)*u/(2*N))*cos(pi*(2*j+1)*v/(2*M));
-                        if u==0
-                            tmpSum=tmpSum*(1/sqrt(2));
+                        tmpSum = double(Blocks(a,b).block(i,j))*...
+                            cos(pi*(2*(u-1)+1)*(i-1)/(2*N))*...
+                            cos(pi*(2*(v-1)+1)*(j-1)/(2*M));
+                        
+                        if (i-1)==0
+                            tmpSum=tmpSum*sqrt(1/2);
                         else
                             tmpSum=tmpSum*1;
                         end
-                        if v==0
-                            tmpSum=tmpSum*(1/sqrt(2));
+                        if (j-1)==0
+                            tmpSum=tmpSum*sqrt(1/2);
                         else
                             tmpSum=tmpSum*1;
                         end
@@ -74,4 +79,4 @@ for a = 1:h/N
         end        
     end
 end
-imshow(DecodeImg);
+imshow(uint8(DecodeImg));
