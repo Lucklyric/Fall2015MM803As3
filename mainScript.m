@@ -7,7 +7,27 @@ M=8;
 %Read Images
 I=imread('cameraman.tif');             
 [h,w]=size(I);                      
-Blocks(h/N,w/M).block=zeros(N,M);  
+Blocks(h/N,w/M).block=zeros(N,M);
+
+%%Padding the image if needed
+modN = mod(h,N); modM = mod(w,M);
+gapN = N;gapM = M;
+if modN == 0 
+    modN = N; 
+    gapN = 0;
+end
+if modM == 0
+    modM = M;
+    gapM = 0;
+end
+newH = h+(N-modN);newW = w+(M-modM);
+padH = round((N-modN)/2); 
+padW = round((M-modM)/2);
+%Make the zero padding symmetrical distributing around the image 
+paddingI=[zeros(padH,newW);
+    zeros(h,padW),I,zeros(h,gapM-padW);
+    zeros(gapN-padH,newW)];
+h = newH; w = newW; I = paddingI;
 
 Norm_Mat=[16 11 10 16 24 40 51 61       
           12 12 14 19 26 58 60 55
