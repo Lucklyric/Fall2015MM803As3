@@ -4,10 +4,17 @@ clear,close;
 % The size of the block
 N=8;                        
 M=8;
+[FileName,PathName] = uigetfile('*.*','Select a Image file');
+filename = fullfile(PathName,FileName); 
 %Read Images
-I=imread('cameraman.tif'); 
-[h,w]=size(I);                      
-Blocks(h/N,w/M).block=zeros(N,M);
+I=imread(filename); 
+[h,w,z]=size(I);  
+
+if z>1
+    I = rgb2gray(I);
+end
+
+                    
 
 %%Padding the image if needed
 modN = mod(h,N); modM = mod(w,M);
@@ -21,13 +28,19 @@ if modM == 0
     gapM = 0;
 end
 newH = h+(N-modN);newW = w+(M-modM);
-padH = round((N-modN)/2); 
-padW = round((M-modM)/2);
+%padH = round((N-modN)/2); 
+%padW = round((M-modM)/2);
+padH = N-modN;
+padW = M-modM;
 %Make the zero padding symmetrical distributing around the image 
-paddingI=[zeros(padH,newW);
-    zeros(h,padW),I,zeros(h,gapM-padW);
-    zeros(gapN-padH,newW)];
+
+% paddingI=[zeros(padH,newW);
+%     zeros(h,padW),I,zeros(h,(M-modM)-padW);
+%     zeros((N-modN)-padH,newW)];
+paddingI = [I,zeros(newH-padH,padW);
+            zeros(padH,newW)];
 h = newH; w = newW; I = paddingI;
+Blocks(h/N,w/M).block=zeros(N,M);
 
 Norm_Mat=[16 11 10 16 24 40 51 61       
           12 12 14 19 26 58 60 55
@@ -141,7 +154,7 @@ for a=1:h/N
     end
 end
 % %% Output TXT file with format: [height,width,DCCoes(with length of (height/8 * width/8)),RunLenngth array with format(01,x1,02,x2..)]
-code = [h,w,DCcoes,RunLengthArray];
+code = [h,w,padH,padW,DCcoes,RunLengthArray];
 fileID = fopen('code.txt','w');
 fprintf(fileID,'%d ',code);
 fclose(fileID);

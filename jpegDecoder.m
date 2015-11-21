@@ -19,8 +19,9 @@ fclose(fileID);
 
 %% Parse information
 h = code(1); w = code(2);
-DCcoes = code(3:2+(h/N)*(w/M));
-RunLengthArray = double(code(3+(h/N)*(w/M):end));
+padH= code(3); padW = code(4);
+DCcoes = code(5:4+(h/N)*(w/M));
+RunLengthArray = double(code(5+(h/N)*(w/M):end));
 DeBlocks(h/N,w/M).block=zeros(N,M);
 ZigZagBlocks(h/N,w/M).array=zeros(1,N*M);
 
@@ -92,7 +93,7 @@ for a=1:h/N
 end
 
 %% Inverse DCT Part
-DecodeImg = zeros(w,h);
+DecodeImg = zeros(h,w);
 for a = 1:h/N
     for b = 1:w/M
         for u = 1:N
@@ -122,4 +123,5 @@ for a = 1:h/N
         end        
     end
 end
-imshow(uint8(DecodeImg));
+finalImage = DecodeImg(1:h-padH,1:w-padW);
+imshow(uint8(finalImage));
